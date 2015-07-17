@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>UnClassic Snake</title>
+    <link href='http://fonts.googleapis.com/css?family=Cabin+Sketch:bold' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        body {
+            background: #DDEBE9;
+            text-align: center;
+        }
+
+        canvas {
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            -webkit-box-shadow: 0 0 20px #000;
+            -moz-box-shadow: 0 0 20px #000;
+            box-shadow: 0 0 20px #000;
+        }
+
+        h1 {
+            font-family: 'Cabin Sketch', arial, serif;
+            font-size: 50px;
+            text-indent: -100px;
+            margin-bottom: 20;
+            margin-top: 30px
+        }
+    </style>
+    <script type="text/javascript" src="js/snake.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/sockets.js"></script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-64351949-3', 'auto');
+        ga('send', 'pageview');
+    </script>
+</head>
+<body onload="createStage();"><h1>snakeM</h1></body>
+</html>

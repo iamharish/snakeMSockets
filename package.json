@@ -1,0 +1,11 @@
+{
+    "name": "snakeM",
+    "version": "0.0.1",
+    "description": "A twisted multiplayer version of snake game",
+    "main": "server.js",
+    "author": "Harika and Harish",
+    "dependencies": {
+        "socket.io": "latest",
+        "node-static": "latest"
+    }
+}
