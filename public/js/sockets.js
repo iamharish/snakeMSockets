@@ -1,4 +1,4 @@
-var socket = io('http://localhost:9999');
+var socket = io();
 
 function sendJoinRequest(){
     socket.emit('joinRequest', { my: 'data' });
