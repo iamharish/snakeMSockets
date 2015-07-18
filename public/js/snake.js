@@ -15,11 +15,10 @@ var height = 40;
 var ctx1;
 var ctx;
 var turn = [];
+var MR = Math.random;
 
 var xV = [-1, 0, 1, 0];
 var yV = [0, -1, 0, 1];
-
-var MR = Math.random;
 
 //tracking all snakes created in this array
 var interval = 0;
@@ -68,26 +67,31 @@ function createStage(){
     sendJoinRequest();
 }
 
-function init(name, players) {
+function init(name, position, players, food) {
     console.log("Game initialization started...");
     //Food, as many as snakes
     for (i = 0; i < players.length; i++) {
-        placeFood();
-        var tempSnake = new Snake(players[i]);
+        placeFood(food[i][0], food[i][1]);
+        var tempSnake = new Snake(players[i], i);
         snakes[i] = tempSnake;
-        if(name === players[i]){
+        if(position === i){
             snake = tempSnake;
         }
     }
+    startGame();
+}
+
+function startGame(){
     interval = setInt(clock, 120);
 }
 
-function Snake(name) {
+function Snake(name, position) {
     this.name = name;
-    this.X = 5 + (MR() * (width - 10)) | 0;
-    this.Y = 5 + (MR() * (height - 10)) | 0;
+    this.position = position;
+    this.X = position * (width-1);
+    this.Y = height / 2 | 0;
     this.score = 0;
-    this.direction = MR() * 3 | 0;
+    this.direction = (position + 3) % 4;
     this.tail = [];
     this.elements = 1;
     this.color = availableSnakeColors[snakeCount];
@@ -216,12 +220,13 @@ function clock() {
     }
 }
 
-function placeFood() {
-    var x, y;
+function placeFood(x, y) {
+    //really missing this feature to not place food in obstacles.
+    /*var x, y;
     do {
         x = MR() * width | 0;
         y = MR() * height | 0;
-    } while (map[x][y]);
+    } while (map[x][y]);*/
     map[x][y] = 1;
     ctx.strokeRect(x * 10 + 1, y * 10 + 1, 10 - 2, 10 - 2);
     ctx.strokeStyle = "green";
@@ -244,14 +249,22 @@ doc.onkeydown = function (e) {
      **/
     //first snake arrow keys
     if (code == 0 && snake.direction != 2) {
-        snake.direction = 0;
+        socket.emit('direction', { 'position': snake.position, 'direction': 0});
+        //snake.direction = 0;
     } else if (code == 1 && snake.direction != 3) {
-        snake.direction = 1;
+        socket.emit('direction', { 'position': snake.position, 'direction': 1});
+        //snake.direction = 1;
     } else if (code == 2 && snake.direction != 0) {
-        snake.direction = 2;
+        socket.emit('direction', { 'position': snake.position, 'direction': 2});
+        //snake.direction = 2;
     } else if (code == 3 && snake.direction != 1) {
-        snake.direction = 3;
+        socket.emit('direction', { 'position': snake.position, 'direction': 3});
+        //snake.direction = 3;
     } else if (e.keyCode == 13) {
         restart();
     }
+}
+
+function directionChangeHandler(data){
+    snakes[data.position].direction = data.direction;
 }

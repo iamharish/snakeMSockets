@@ -4,6 +4,7 @@
     "description": "A twisted multiplayer version of snake game",
     "main": "server.js",
     "author": "Harika and Harish",
+    "start":"node server.js",
     "dependencies": {
         "socket.io": "latest",
         "node-static": "latest"

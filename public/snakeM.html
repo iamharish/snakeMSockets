@@ -22,12 +22,40 @@
         }
 
         h1 {
-            font-family: 'Cabin Sketch', arial, serif;
+            font-family: 'Papyrus';
             font-size: 50px;
             text-indent: -100px;
             margin-bottom: 20;
-            margin-top: 30px
+            margin-top: 30px;
+            color: #0D7DA5;
         }
+
+        #leftSidebar {
+        float: left;
+        width: 300px;
+        font-size: 30px;
+        color: #9E0EE6;
+        font-family: "Apple Chancery";
+
+        }
+
+        #rightSidebar {
+            float: right;
+            width: 300px;
+            font-size: 30px;
+            color: #E6730E;
+            font-family: "Apple Chancery";
+        }
+
+        #player1Score{
+            margin-top:5px;
+            color: #9E0EE6;
+        }
+        #player2Score{
+            margin-top:5px;
+            color: #E6730E;
+        }
+
     </style>
     <script type="text/javascript" src="js/snake.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -49,5 +77,16 @@
         ga('send', 'pageview');
     </script>
 </head>
-<body onload="createStage();"><h1>snakeM</h1></body>
+<body onload="createStage();"><h1>snakeM</h1>
+<div id = "leftSidebar" >
+    <h4>Player1</h4>
+    <p id = player1Score > 0 </p>
+</div>
+
+<div id = "rightSidebar">
+    <h4>Player2</h4>
+    <p id = player2Score > 0</p>
+</div>
+</body>
+
 </html>
