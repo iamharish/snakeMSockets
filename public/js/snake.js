@@ -71,8 +71,8 @@ function init(snakes) {
 function snakeRenderer(snake, release){
     for(i = 0; i<snake.tail.length; i++){
         ctx.fillRect(snake.tail[i][0] * 10, snake.tail[i][1] * 10, 10 - 1, 10 - 1);
-        ctx.fillStyle = snake.color;
     }
+    ctx.fillStyle = snake.color;
     snakes[snake.position] = snake;
     if(release != null){
         ctx.clearRect(release[0] * 10, release[1] * 10, 10, 10);
@@ -80,8 +80,8 @@ function snakeRenderer(snake, release){
 }
 
 function rollCredits() {
-    var topScore = snakes[1].score;
-    var winner = snakes[1].name;
+    var topScore = snakes[0].score;
+    var winner = snakes[0].name;
     for (i = 1; i < snakes.length; i++) {
         var snake = snakes[i];
         if(snake.score > topScore){

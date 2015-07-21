@@ -120,14 +120,19 @@ function Snake(name, position) {
                         }
                     }
                     if(aggressorLength > tailLengthBelowHitSpot){
-                        this.elements -= tailLengthBelowHitSpot;
-                        for(var j=0; j < tailLengthBelowHitSpot; j++){
-                            dir = this.tail.pop();
-                            map[dir[0]][dir[1]] = 0;
-                            ctx.clearRect(dir[0] * 10, dir[1] * 10, 10, 10);
+                        if(tailLengthBelowHitSpot == this.elements){
+                            //head-on collision
+                            io.emit('end');
+                            clearInterval(interval);
+                        } else {
+                            this.elements -= tailLengthBelowHitSpot;
+                            for(var j=0; j < tailLengthBelowHitSpot; j++){
+                                dir = this.tail.pop();
+                                map[dir[0]][dir[1]] = 0;
+                            }
+                            hitSpotX = -1;
+                            hitSpotY = -1;
                         }
-                        hitSpotX = -1;
-                        hitSpotY = -1;
                     } else {
                         io.emit('end');
                         clearInterval(interval);
