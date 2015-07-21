@@ -1,24 +1,17 @@
 
 //using these two variable for assgining color to snakes
-var availableSnakeColors = ["#E6730E", "#9E0EE6"];
-var snakeCount = 0;
 var map = [];
 var hitSpotX = -1;
 var hitSpotY = -1;
 var aggressorLength;
 var snakes = [];
 //current player snake
-var snake;
+var position;
 
 var width = 65;
 var height = 40;
 var ctx1;
 var ctx;
-var turn = [];
-var MR = Math.random;
-
-var xV = [-1, 0, 1, 0];
-var yV = [0, -1, 0, 1];
 
 //tracking all snakes created in this array
 var interval = 0;
@@ -67,99 +60,23 @@ function createStage(){
     sendJoinRequest();
 }
 
-function init(name, position, players, food) {
-    console.log("Game initialization started...");
-    //Food, as many as snakes
-    for (i = 0; i < players.length; i++) {
-        placeFood(food[i][0], food[i][1]);
-        var tempSnake = new Snake(players[i], i);
-        snakes[i] = tempSnake;
-        if(position === i){
-            snake = tempSnake;
-        }
+function init(snakes) {
+    for (i = 0; i < width; i++) {
+        map[i] = [];
     }
-    startGame();
+    console.log("Game initialization started...");
+    snakes = this.snakes;
 }
 
-function startGame(){
-    interval = setInt(clock, 120);
-}
-
-function Snake(name, position) {
-    this.name = name;
-    this.position = position;
-    this.X = position * (width-1);
-    this.Y = height / 2 | 0;
-    this.score = 0;
-    this.direction = (position + 3) % 4;
-    this.tail = [];
-    this.elements = 1;
-    this.color = availableSnakeColors[snakeCount];
-    this.move = function () {
-        //if canvas edges have to be wall, then easy should be false
-        if ((easy || (0 <= this.X && 0 <= this.Y && this.X < width && this.Y < height)) && (2 !== map[this.X][this.Y])) {
-            //check if a hit happened
-            if(hitSpotX != -1){
-                if(this.elements > 1){
-                    //decide if the hitSpot is within the snake tail
-                    var tailLengthBelowHitSpot = 0;
-                    for(var i=0;i<this.elements;i++){
-                        if(this.tail[i][0] == hitSpotX && this.tail[i][1] == hitSpotY ){
-                            tailLengthBelowHitSpot = this.elements - i;
-                            break;
-                        }
-                    }
-                    if(aggressorLength > tailLengthBelowHitSpot){
-                        this.elements -= tailLengthBelowHitSpot;
-                        for(var j=0; j < tailLengthBelowHitSpot; j++){
-                            dir = this.tail.pop();
-                            map[dir[0]][dir[1]] = 0;
-                            ctx.clearRect(dir[0] * 10, dir[1] * 10, 10, 10);
-                        }
-                        hitSpotX = -1;
-                        hitSpotY = -1;
-                    } else {
-                        rollCredits();
-                    }
-                } else {
-                    //snake has no tail. Game Over
-                    rollCredits();
-                }
-            } else {
-                //regular snake movement
-                if (1 === map[this.X][this.Y]) {
-                    this.score += 50;
-                    placeFood();
-                    this.elements++;
-                }
-
-                ctx.fillRect(this.X * 10, this.Y * 10, 10 - 1, 10 - 1);
-                ctx.fillStyle = this.color;
-                map[this.X][this.Y] = 2;
-                this.tail.unshift([this.X, this.Y]);
-
-                this.X += xV[this.direction];
-                this.Y += yV[this.direction];
-
-                if (this.elements < this.tail.length) {
-                    dir = this.tail.pop();
-                    map[dir[0]][dir[1]] = 0;
-                    ctx.clearRect(dir[0] * 10, dir[1] * 10, 10, 10);
-                }
-            }
-        } else if (!turn.length) {
-            if(hitSpotX == -1){
-                hitSpotX = this.X;
-                hitSpotY = this.Y;
-                aggressorLength = this.elements;
-            } else {
-                //seems a head on collision as hitSpot already exists. Kill game
-                rollCredits();
-            }
-        }
-    };
-    snakeCount++;
-    return this;
+function snakeRenderer(snake, release){
+    for(i = 0; i<snake.tail.length; i++){
+        ctx.fillRect(snake.tail[i][0] * 10, snake.tail[i][1] * 10, 10 - 1, 10 - 1);
+        ctx.fillStyle = snake.color;
+    }
+    snakes[snake.position] = snake;
+    if(release != null){
+        ctx.clearRect(release[0] * 10, release[1] * 10, 10, 10);
+    }
 }
 
 function rollCredits() {
@@ -174,6 +91,8 @@ function rollCredits() {
             winner = "players. Its a tie"
         }
     }
+    var date = new Date();
+    console.log(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+":"+date.getMilliseconds()+":"+"Game over");
     ctx.fillStyle = '#f00';
     ctx.font = 'italic bold 30px sans-serif';
     ctx.textBaseline = 'Middle';
@@ -189,45 +108,26 @@ function rollCredits() {
 }
 
 function restart() {
-    ctx.clearRect(0, 0, width * 10, height * 10);
-    map = [];
-    for (i = 0; i < snakes.length; i++) {
-        var snake = snakes[i];
-        snake.X = 5 + (MR() * (width - 10)) | 0;
-        snake.Y = 5 + (MR() * (height - 10)) | 0;
-        snake.direction = MR() * 3 | 0;
-        snake.elements = 1;
-        snake.tail = [];
-        snake.score = 0;
-    }
-    for (i = 0; i < width; i++) {
-        map[i] = [];
-    }
-    //needs change
-    placeFood();
-    placeFood();
-}
-
-function clock() {
-    for (i = 0; i < snakes.length; i++) {
-        var snake = snakes[i];
-        snake.move();
-        //can be improved. we can check if it's a canvas boundaries and if so then do modulo. Which operation is costly modulo or if check
-        if (easy) {
-            snake.X = (snake.X + width) % width;
-            snake.Y = (snake.Y + height) % height;
+    socket.emit('restart', { });
+    socket.on('restart', function(data){
+        ctx.clearRect(0, 0, width * 10, height * 10);
+        map = [];
+        for (i = 0; i < snakes.length; i++) {
+            var snake = snakes[i];
+            snake.X = 5 + (MR() * (width - 10)) | 0;
+            snake.Y = 5 + (MR() * (height - 10)) | 0;
+            snake.direction = MR() * 3 | 0;
+            snake.elements = 1;
+            snake.tail = [];
+            snake.score = 0;
         }
-    }
+        for (i = 0; i < width; i++) {
+            map[i] = [];
+        }
+    });
 }
 
 function placeFood(x, y) {
-    //really missing this feature to not place food in obstacles.
-    /*var x, y;
-    do {
-        x = MR() * width | 0;
-        y = MR() * height | 0;
-    } while (map[x][y]);*/
-    map[x][y] = 1;
     ctx.strokeRect(x * 10 + 1, y * 10 + 1, 10 - 2, 10 - 2);
     ctx.strokeStyle = "green";
 }
@@ -247,18 +147,18 @@ doc.onkeydown = function (e) {
      * 2: right
      * 3: down
      **/
-    //first snake arrow keys
-    if (code == 0 && snake.direction != 2) {
-        socket.emit('direction', { 'position': snake.position, 'direction': 0});
+    console.log("Code"+code+":"+snakes[position]);
+    if (code == 0 && snakes[position].direction != 2) {
+        socket.emit('direction', { 'position': position, 'direction': 0});
         //snake.direction = 0;
-    } else if (code == 1 && snake.direction != 3) {
-        socket.emit('direction', { 'position': snake.position, 'direction': 1});
+    } else if (code == 1 && snakes[position].direction != 3) {
+        socket.emit('direction', { 'position': position, 'direction': 1});
         //snake.direction = 1;
-    } else if (code == 2 && snake.direction != 0) {
-        socket.emit('direction', { 'position': snake.position, 'direction': 2});
+    } else if (code == 2 && snakes[position].direction != 0) {
+        socket.emit('direction', { 'position': position, 'direction': 2});
         //snake.direction = 2;
-    } else if (code == 3 && snake.direction != 1) {
-        socket.emit('direction', { 'position': snake.position, 'direction': 3});
+    } else if (code == 3 && snakes[position].direction != 1) {
+        socket.emit('direction', { 'position': position, 'direction': 3});
         //snake.direction = 3;
     } else if (e.keyCode == 13) {
         restart();

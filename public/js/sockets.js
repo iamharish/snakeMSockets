@@ -4,12 +4,8 @@ function sendJoinRequest(){
     socket.emit('joinRequest', { my: 'data' });
 }
 
-var name;
-var position;
-
 socket.on('accepted', function(data){
     console.log(JSON.stringify(data));
-    name = data.name;
     position = data.position;
 });
 socket.on('rejected', function(data){
@@ -17,15 +13,25 @@ socket.on('rejected', function(data){
 });
 
 //To synchronize game start
-/*socket.on('prepareStart', function(data){
-    console.log("Game prepare command received");
-    init(name, position, data.players, data.food);
-    socket.emit("");
-});*/
+socket.on('prepareStart', function(data){
+    var date = new Date();
+    console.log(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+":"+date.getMilliseconds()+":"+"Game prepare command received:"+JSON.stringify(data));
+    init(data.snakes);
+});
 
 socket.on('start', function(data){
     console.log("Game start command received");
-    init(name, position, data.players, data.food);
+    startGame();
+});
+
+socket.on('move', function(data){
+    console.log('move:'+JSON.stringify(data));
+    snakeRenderer(data.snake, data.release);
+});
+
+socket.on('placeFood', function(data){
+    console.log('move:'+JSON.stringify(data));
+    placeFood(data[0], data[1]);
 });
 
 socket.on('direction', function(data){
@@ -33,10 +39,14 @@ socket.on('direction', function(data){
 });
 
 socket.on('end', function(data){
-    console.log("Game start command received");
-    init(name, position, data.players);
+    console.log("Game end command received");
+    rollCredits();
 });
 
 window.onbeforeunload = function (e) {
     socket.emit('leave', { 'name': name, 'position':position });
 };
+
+
+
+
