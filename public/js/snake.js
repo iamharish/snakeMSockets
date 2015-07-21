@@ -61,7 +61,6 @@ function createStage(){
 }
 
 function init(snakes) {
-    ctx.clearRect(0, 0, width * 10, height * 10);
     for (i = 0; i < width; i++) {
         map[i] = [];
     }

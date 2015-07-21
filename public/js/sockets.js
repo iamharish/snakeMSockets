@@ -30,7 +30,7 @@ socket.on('move', function(data){
 });
 
 socket.on('placeFood', function(data){
-    console.log('move:'+JSON.stringify(data));
+    console.log('placeFood:'+JSON.stringify(data));
     placeFood(data[0], data[1]);
 });
 
