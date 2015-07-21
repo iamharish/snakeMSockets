@@ -17,9 +17,6 @@ function handler (req, res) {
 var width = 65;
 var height = 40;
 var map = [];
-for (i = 0; i < width; i++) {
-    map[i] = [];
-}
 
 var xV = [-1, 0, 1, 0];
 var yV = [0, -1, 0, 1];
@@ -35,7 +32,6 @@ var MR = Math.random;
 //Players Store
 var players = [];
 var playersSockets = [];
-var playerStartTimes = [];
 var maxPlayersCount = 2; //restricting to 2 for now
 var startIn = 5000; //seconds. Game synchronization attempts will be made during this time
 
@@ -50,7 +46,6 @@ io.on('connection', function (socket) {
             playersSockets.push(socket);
             var tempSnake = new Snake(players[position], position);
             snakes[players.length-1] = tempSnake;
-            playerStartTimes[players.length-1] = startIn;
 
             //register all functions clients can perform
             socket.on('direction', function(data){
@@ -58,16 +53,11 @@ io.on('connection', function (socket) {
             });
 
             socket.on('restart', function(data){
-                playerStartTimes = [];
-                io.emit('restart', data);
+                restart();
             });
 
             socket.emit('accepted', {'position':position});
             if(players.length == maxPlayersCount){
-                for(var i=0; i<maxPlayersCount; i++){
-                    placeFood();
-                }
-                io.emit('prepareStart', {'snakes':snakes});
                 startGame();
             }
         } else {
@@ -79,7 +69,15 @@ io.on('connection', function (socket) {
 
 var interval
 function startGame(){
+    map = [];
+    for (i = 0; i < width; i++) {
+        map[i] = [];
+    }
+    for(var i=0; i<maxPlayersCount; i++){
+        placeFood();
+    }
     interval = setInterval(clock, 180);
+    io.emit('prepareStart', {'snakes':snakes});
 }
 
 function clock() {
@@ -186,4 +184,12 @@ function placeFood() {
      } while (map[x][y]);
     map[x][y] = 1;
     io.emit('placeFood', [x, y]);
+}
+
+function restart(){
+    for (var i = 0; i < snakes.length; i++) {
+        var snake = new Snake(snakes[i].name, snakes[i].position);
+        snakes[i] = snake;
+    }
+    startGame();
 }

@@ -61,6 +61,7 @@ function createStage(){
 }
 
 function init(snakes) {
+    ctx.clearRect(0, 0, width * 10, height * 10);
     for (i = 0; i < width; i++) {
         map[i] = [];
     }
@@ -79,6 +80,7 @@ function snakeRenderer(snake, release){
     }
 }
 
+var gameEnded = false;
 function rollCredits() {
     var topScore = snakes[0].score;
     var winner = snakes[0].name;
@@ -105,26 +107,7 @@ function rollCredits() {
     //clear off temp variables
     hitSpotX = -1;
     hitSpotY = -1;
-}
-
-function restart() {
-    socket.emit('restart', { });
-    socket.on('restart', function(data){
-        ctx.clearRect(0, 0, width * 10, height * 10);
-        map = [];
-        for (i = 0; i < snakes.length; i++) {
-            var snake = snakes[i];
-            snake.X = 5 + (MR() * (width - 10)) | 0;
-            snake.Y = 5 + (MR() * (height - 10)) | 0;
-            snake.direction = MR() * 3 | 0;
-            snake.elements = 1;
-            snake.tail = [];
-            snake.score = 0;
-        }
-        for (i = 0; i < width; i++) {
-            map[i] = [];
-        }
-    });
+    gameEnded = true;
 }
 
 function placeFood(x, y) {
@@ -161,7 +144,10 @@ doc.onkeydown = function (e) {
         socket.emit('direction', { 'position': position, 'direction': 3});
         //snake.direction = 3;
     } else if (e.keyCode == 13) {
-        restart();
+        if(gameEnded){
+            gameEnded = false
+            socket.emit('restart');
+        }
     }
 }
 
