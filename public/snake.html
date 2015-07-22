@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>UnClassic Snake</title>
+    <title>Classic Snake</title>
     <link href='http://fonts.googleapis.com/css?family=Cabin+Sketch:bold' rel='stylesheet' type='text/css'>
     <style type="text/css">
         body {
@@ -31,11 +31,11 @@
         }
 
         #leftSidebar {
-        float: left;
-        width: 300px;
-        font-size: 30px;
-        color: #9E0EE6;
-        font-family: "Apple Chancery";
+            float: left;
+            width: 300px;
+            font-size: 30px;
+            color: #9E0EE6;
+            font-family: "Apple Chancery";
 
         }
 
@@ -46,7 +46,7 @@
             color: #E6730E;
             font-family: "Apple Chancery";
         }
-        
+
         #player1Score{
             margin-top:5px;
             color: #9E0EE6;
@@ -57,9 +57,7 @@
         }
 
     </style>
-    <script type="text/javascript" src="js/snakeM.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="js/sockets.js"></script>
+    <script type="text/javascript" src="js/snake.js"></script>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
@@ -77,16 +75,10 @@
         ga('send', 'pageview');
     </script>
 </head>
-<body onload="createStage();"><h1>snakeM</h1>
+<body onload="init();"><h1>Classic Snake</h1>
 <div id = "leftSidebar" >
     <h4>Player1</h4>
     <div id = 'Player1Score' > 0 </div>
 </div>
-
-<div id = "rightSidebar">
-    <h4>Player2</h4>
-    <div id = 'Player2Score' > 0</div>
-</div>
 </body>
-
 </html>

@@ -1,152 +1,133 @@
+function init() {
+    var width = 65;
+    var height = 40;
 
-//using these two variable for assgining color to snakes
-var map = [];
-var hitSpotX = -1;
-var hitSpotY = -1;
-var snakes = [];
-//current player snake
-var position;
+    var ctx;
+    var turn = [];
 
-var width = 65;
-var height = 40;
-var ctx1;
-var ctx;
+    var xV = [-1, 0, 1, 0];
+    var yV = [0, -1, 0, 1];
 
-//tracking all snakes created in this array
-var i;
-var doc = document;
-var canvas = doc.createElement('canvas');
-var canvas1 = doc.createElement('canvas');
+    var map = [];
+    var MR = Math.random;
 
-function createStage(){
-    console.log("Setting game stage");
-    // canvas for snake and food
+    function Snake() {
+        this.X = 5 + (MR() * (width - 10)) | 0;
+        this.Y = 5 + (MR() * (height - 10)) | 0;
+        this.direction = MR() * 3 | 0;
+        this.tail = [];
+        this.elements = 1;
+        return this;
+    }
+
+    var snake = new Snake();
+    var snakes = [snake];
+    var interval = 0;
+    var score = 0;
+    var inc_score = 50;
+    var sum = 0, easy = true;
+    var i, dir;
+    var win = window;
+    var doc = document;
+    var canvas = doc.createElement('canvas');
+    var setInt = win.setInterval;
+    var clInt = win.clearInterval;
+    for (i = 0; i < width; i++) {
+        map[i] = [];
+    }
+
     canvas.setAttribute('width', width * 10);
     canvas.setAttribute('height', height * 10);
     ctx = canvas.getContext('2d');
     doc.body.appendChild(canvas);
-
-    // first canvas for background grid
-    canvas1.setAttribute('width', width * 10);
-    canvas1.setAttribute('height', height * 10);
-    ctx1 = canvas1.getContext('2d');
-    doc.body.appendChild(canvas1);
-
-    //vertical lines
-    for (var i = 0; i < width; i++) {
-        ctx1.beginPath();
-        ctx1.moveTo(i * 10, 0);
-        ctx1.lineTo(i * 10, height * 10);
-        //set line color
-        ctx1.strokeStyle = '#8C9191';
-        ctx1.stroke();
+    function placeFood() {
+        var x, y;
+        do {
+            x = MR() * width | 0;
+            y = MR() * height | 0;
+        } while (map[x][y]);
+        map[x][y] = 1;
+        ctx.strokeRect(x * 10 + 1, y * 10 + 1, 10 - 2, 10 - 2);
     }
 
-    //Horizontal lines
-    for (var y = 0; y < height; y++) {
-        ctx1.beginPath();
-        ctx1.moveTo(0, y * 10);
-        ctx1.lineTo(width * 10, y * 10);
-        ctx1.stroke();
+    placeFood();
+    function restart() {
+        ctx.clearRect(0, 0, width * 10, height * 10);
+        map = [];
+
+        for(i= 0; i< snakes.length; i++){
+            var snake = snakes[i];
+            snake.X = 5 + (MR() * (width - 10)) | 0;
+            snake.Y = 5 + (MR() * (height - 10)) | 0;
+            snake.direction = MR() * 3 | 0;
+            snake.elements = 1;
+            snake.tail = [];
+        }
+
+        score = 0;
+        inc_score = 50;
+
+        for (i = 0; i < width; i++) {
+            map[i] = [];
+        }
+        placeFood();
+        placeFood();
     }
 
-    //Now request server for joining
-    sendJoinRequest();
-}
+    function clock() {
+        if (easy) {
+            for(i= 0; i< snakes.length; i++) {
+                var snake = snakes[i];
+                snake.X = (snake.X + width) % width;
+                snake.Y = (snake.Y + height) % height;
+            }
+        }
+        --inc_score;
 
-function init(snakes) {
-    for (i = 0; i < width; i++) {
-        map[i] = [];
-    }
-    console.log("Game initialization started...");
-    snakes = this.snakes;
-}
+        if ((easy || (0 <= snake.X && 0 <= snake.Y && snake.X < width && snake.Y < height)) && 2 !== map[snake.X][snake.Y]) {
+            if (1 === map[snake.X][snake.Y]) {
+                score += Math.max(5, inc_score);
+                inc_score = 50;
+                placeFood();
+                snake.elements++;
+            }
 
-function snakeRenderer(snake, release){
-    for(i = 0; i<snake.tail.length; i++){
-        ctx.fillRect(snake.tail[i][0] * 10, snake.tail[i][1] * 10, 10 - 1, 10 - 1);
-    }
-    ctx.fillStyle = snake.color;
-    snakes[snake.position] = snake;
-    if(release != null){
-        ctx.clearRect(release[0] * 10, release[1] * 10, 10, 10);
-    }
-    document.getElementById(snake.name+'Score').innerHTML = snake.score;
-}
+            ctx.fillRect(snake.X * 10, snake.Y * 10, 10 - 1, 10 - 1);
+            map[snake.X][snake.Y] = 2;
+            snake.tail.unshift([snake.X, snake.Y]);
 
-var gameEnded = false;
-function rollCredits() {
-    var topScore = snakes[0].score;
-    var winner = snakes[0].name;
-    for (i = 1; i < snakes.length; i++) {
-        var snake = snakes[i];
-        if(snake.score > topScore){
-            winner = snake.name;
-        } else if(snake.score == topScore){
-            //more better way to handle tie's would be needed. But for now - no winner
-            winner = "players. Its a tie"
+            snake.X += xV[snake.direction];
+            snake.Y += yV[snake.direction];
+
+            if (snake.elements < snake.tail.length) {
+                dir = snake.tail.pop()
+
+                map[dir[0]][dir[1]] = 0;
+                ctx.clearRect(dir[0] * 10, dir[1] * 10, 10, 10);
+            }
+
+        } else if (!turn.length) {
+            restart();
+        }
+
+        document.getElementById('Player1Score').innerText = score;
+    }
+
+    interval = setInt(clock, 120);
+
+    doc.onkeydown = function (e) {
+
+        var code = e.keyCode - 37;
+
+        /*
+         * 0: left
+         * 1: up
+         * 2: right
+         * 3: down
+         **/
+        if (0 <= code && code < 4 && code !== turn[0]) {
+            //turn.unshift(code);
+            snake.direction = code;
         }
     }
-    var date = new Date();
-    console.log(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+":"+date.getMilliseconds()+":"+"Game over");
-    ctx.fillStyle = '#f00';
-    ctx.font = 'italic bold 30px sans-serif';
-    ctx.textBaseline = 'Middle';
-    ctx.fillText('GAME OVER!!!', 220, 100);
-    ctx.fillText("All hail the "+winner, 150, 150);
-    ctx.fillStyle = 'green';
-    ctx.font = ' italic 20px courier';
-    ctx.textBaseline = 'Middle';
-    ctx.fillText('Hit ENTER to RESTART!!', 15, 350);
-    //clear off temp variables
-    hitSpotX = -1;
-    hitSpotY = -1;
-    gameEnded = true;
-}
-
-function placeFood(x, y) {
-    ctx.strokeRect(x * 10 + 1, y * 10 + 1, 10 - 2, 10 - 2);
-    ctx.strokeStyle = "green";
-    for(i = 0; i<snakes.length; i++){
-
-    }
-}
-
-for (i = 0; i < width; i++) {
-    map[i] = [];
-}
-
-// Adding keyboard controls.
-doc.onkeydown = function (e) {
-
-    var code = e.keyCode - 37;
-
-    /*
-     * 0: left
-     * 1: up
-     * 2: right
-     * 3: down
-     **/
-    if (code == 0 && snakes[position].direction != 2) {
-        socket.emit('direction', { 'position': position, 'direction': 0});
-        //snake.direction = 0;
-    } else if (code == 1 && snakes[position].direction != 3) {
-        socket.emit('direction', { 'position': position, 'direction': 1});
-        //snake.direction = 1;
-    } else if (code == 2 && snakes[position].direction != 0) {
-        socket.emit('direction', { 'position': position, 'direction': 2});
-        //snake.direction = 2;
-    } else if (code == 3 && snakes[position].direction != 1) {
-        socket.emit('direction', { 'position': position, 'direction': 3});
-        //snake.direction = 3;
-    } else if (e.keyCode == 13) {
-        if(gameEnded){
-            gameEnded = false
-            socket.emit('restart');
-        }
-    }
-}
-
-function directionChangeHandler(data){
-    snakes[data.position].direction = data.direction;
 }
