@@ -3,7 +3,6 @@
 var map = [];
 var hitSpotX = -1;
 var hitSpotY = -1;
-var aggressorLength;
 var snakes = [];
 //current player snake
 var position;
@@ -14,15 +13,10 @@ var ctx1;
 var ctx;
 
 //tracking all snakes created in this array
-var interval = 0;
-var easy = true;
-var i, dir;
-var win = window;
+var i;
 var doc = document;
 var canvas = doc.createElement('canvas');
 var canvas1 = doc.createElement('canvas');
-var setInt = win.setInterval;
-var clInt = win.clearInterval;
 
 function createStage(){
     console.log("Setting game stage");
@@ -77,6 +71,7 @@ function snakeRenderer(snake, release){
     if(release != null){
         ctx.clearRect(release[0] * 10, release[1] * 10, 10, 10);
     }
+    document.getElementById(snake.name+'Score').innerHTML = snake.score;
 }
 
 var gameEnded = false;
@@ -112,6 +107,9 @@ function rollCredits() {
 function placeFood(x, y) {
     ctx.strokeRect(x * 10 + 1, y * 10 + 1, 10 - 2, 10 - 2);
     ctx.strokeStyle = "green";
+    for(i = 0; i<snakes.length; i++){
+
+    }
 }
 
 for (i = 0; i < width; i++) {
@@ -129,7 +127,6 @@ doc.onkeydown = function (e) {
      * 2: right
      * 3: down
      **/
-    console.log("Code"+code+":"+snakes[position]);
     if (code == 0 && snakes[position].direction != 2) {
         socket.emit('direction', { 'position': position, 'direction': 0});
         //snake.direction = 0;

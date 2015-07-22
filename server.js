@@ -130,6 +130,7 @@ function Snake(name, position) {
                             }
                             hitSpotX = -1;
                             hitSpotY = -1;
+                            this.score -= tailLengthBelowHitSpot*50;
                         }
                     } else {
                         io.emit('end');
