@@ -15,22 +15,22 @@ socket.on('rejected', function(data){
 //To synchronize game start
 socket.on('prepareStart', function(data){
     var date = new Date();
-    console.log(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+":"+date.getMilliseconds()+":"+"Game prepare command received:"+JSON.stringify(data));
+    //console.log(date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+":"+date.getMilliseconds()+":"+"Game prepare command received:"+JSON.stringify(data));
     init(data.snakes);
 });
 
 socket.on('start', function(data){
-    console.log("Game start command received");
+    //console.log("Game start command received");
     startGame();
 });
 
 socket.on('move', function(data){
-    console.log('move:'+JSON.stringify(data));
+    //console.log('move:'+JSON.stringify(data));
     snakeRenderer(data.snake, data.release);
 });
 
 socket.on('placeFood', function(data){
-    console.log('placeFood:'+JSON.stringify(data));
+    //console.log('placeFood:'+JSON.stringify(data));
     placeFood(data[0], data[1]);
 });
 
@@ -39,7 +39,7 @@ socket.on('direction', function(data){
 });
 
 socket.on('end', function(data){
-    console.log("Game end command received");
+    //console.log("Game end command received");
     rollCredits();
 });
 
