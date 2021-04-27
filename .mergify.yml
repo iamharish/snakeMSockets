@@ -10,7 +10,7 @@ queue_rules:
 pull_request_rules:
   - name: move to urgent queue when 2 reviews and label urgent
     conditions:
-      - base=main
+      - base=master
       - "#approved-reviews-by>=1"
       - label=urgent
     actions:
@@ -19,7 +19,7 @@ pull_request_rules:
 
   - name: merge using the merge queue
     conditions:
-      - base=main
+      - base=master
       - "#approved-reviews-by>=1"
       - check-success=Node.js CI / build (12.x) (pull_request) 
       - label!=urgent
