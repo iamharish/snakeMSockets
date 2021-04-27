@@ -1,11 +1,11 @@
 queue_rules:
   - name: urgent
     conditions:
-      - check-success=Node.js CI / build (12.x) (pull_request) 
+      - check-success=Node.js CI
 
   - name: default
     conditions:
-      - check-success=Node.js CI / build (12.x) (pull_request) 
+      - check-success=Node.js CI
 
 pull_request_rules:
   - name: move to urgent queue when 2 reviews and label urgent
@@ -21,7 +21,7 @@ pull_request_rules:
     conditions:
       - base=master
       - "#approved-reviews-by>=1"
-      - check-success=Node.js CI / build (12.x) (pull_request) 
+      - check-success=Node.js CI
       - label!=urgent
     actions:
       queue:
