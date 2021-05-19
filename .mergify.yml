@@ -11,7 +11,7 @@ pull_request_rules:
   - name: move to urgent queue when 2 reviews and label urgent
     conditions:
       - base=master
-      - "#approved-reviews-by>=1"
+      - "#approved-reviews-by>=2"
       - label=urgent
     actions:
       queue:
@@ -20,7 +20,7 @@ pull_request_rules:
   - name: merge using the merge queue
     conditions:
       - base=master
-      - "#approved-reviews-by>=1"
+      - "#approved-reviews-by>=2"
       - check-success=build (12.x)
       - label!=urgent
     actions:
